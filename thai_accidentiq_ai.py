@@ -159,8 +159,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Paths
-BASE_DIR = r"E:\ML Research\Thai accident data"
+# Paths - Use relative paths for deployment
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(BASE_DIR, "data", "processed", "preprocessed_data.csv")
 MODEL_FILE = os.path.join(BASE_DIR, "models", "best_tuned_model.pkl")
 SCALER_FILE = os.path.join(BASE_DIR, "models", "scaler.pkl")
@@ -168,7 +168,20 @@ RESULTS_DIR = os.path.join(BASE_DIR, "outputs", "results")
 REPORTS_DIR = os.path.join(BASE_DIR, "outputs", "reports")
 
 # Initialize Groq (for chat)
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# Get API key from Streamlit secrets (deployment) or environment (local)
+try:
+    GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", None)
+except:
+    GROQ_API_KEY = None
+
+if not GROQ_API_KEY:
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+if not GROQ_API_KEY:
+    st.warning("⚠️ Groq API key not configured. Chat features will be disabled.")
+    chat_enabled = False
+else:
+    chat_enabled = True
 
 # Load data and model
 @st.cache_resource
@@ -375,64 +388,69 @@ if loaded:
     
     with tab3:
         st.markdown("## 💬 AI Chat Assistant")
-        st.info("🤖 Ask me anything about Thai road accident patterns, safety recommendations, or data insights!")
         
-        # Initialize chat history
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
-        
-        # Display chat history
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-        
-        # Chat input
-        if prompt := st.chat_input("Ask about road safety, predictions, or data insights..."):
-            # Add user message
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
+        if not chat_enabled:
+            st.warning("⚠️ Chat feature requires Groq API key. Please configure in Streamlit secrets.")
+            st.info("To enable chat:\n1. Go to App Settings\n2. Add GROQ_API_KEY to Secrets\n3. Reboot app")
+        else:
+            st.info("🤖 Ask me anything about Thai road accident patterns, safety recommendations, or data insights!")
             
-            # Generate response
-            try:
-                client = Groq(api_key=GROQ_API_KEY)
+            # Initialize chat history
+            if "messages" not in st.session_state:
+                st.session_state.messages = []
+            
+            # Display chat history
+            for message in st.session_state.messages:
+                with st.chat_message(message["role"]):
+                    st.markdown(message["content"])
+            
+            # Chat input
+            if prompt := st.chat_input("Ask about road safety, predictions, or data insights..."):
+                # Add user message
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with st.chat_message("user"):
+                    st.markdown(prompt)
                 
-                context = f"""You are Thai AccidentIQ AI, an expert road safety analyst. 
+                # Generate response
+                try:
+                    client = Groq(api_key=GROQ_API_KEY)
                 
-                Dataset context:
-                - 81,735 Thai road accidents (2019-2022)
-                - Top predictor: Vehicle type (SHAP: 0.47)
-                - 74% caused by speeding
-                - 12.4% fatal rate
-                - Model: XGBoost (F1: 0.52, ROC-AUC: 0.81)
-                
-                Answer concisely and professionally. Use data to support answers.
-                """
-                
-                response = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
-                    messages=[
-                        {"role": "system", "content": context},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=0.7,
-                    max_tokens=500
-                )
-                
-                answer = response.choices[0].message.content
-                
-                # Add assistant message
-                st.session_state.messages.append({"role": "assistant", "content": answer})
-                with st.chat_message("assistant"):
-                    st.markdown(answer)
+                    context = f"""You are Thai AccidentIQ AI, an expert road safety analyst. 
                     
-            except Exception as e:
-                st.error(f"Chat error: {e}")
-        
-        # Clear chat button
-        if st.button("🗑️ Clear Chat History"):
-            st.session_state.messages = []
-            st.rerun()
+                    Dataset context:
+                    - 81,735 Thai road accidents (2019-2022)
+                    - Top predictor: Vehicle type (SHAP: 0.47)
+                    - 74% caused by speeding
+                    - 12.4% fatal rate
+                    - Model: XGBoost (F1: 0.52, ROC-AUC: 0.81)
+                    
+                    Answer concisely and professionally. Use data to support answers.
+                    """
+                    
+                    response = client.chat.completions.create(
+                        model="llama-3.3-70b-versatile",
+                        messages=[
+                            {"role": "system", "content": context},
+                            {"role": "user", "content": prompt}
+                        ],
+                        temperature=0.7,
+                        max_tokens=500
+                    )
+                    
+                    answer = response.choices[0].message.content
+                    
+                    # Add assistant message
+                    st.session_state.messages.append({"role": "assistant", "content": answer})
+                    with st.chat_message("assistant"):
+                        st.markdown(answer)
+                        
+                except Exception as e:
+                    st.error(f"Chat error: {e}")
+            
+            # Clear chat button
+            if st.button("🗑️ Clear Chat History"):
+                st.session_state.messages = []
+                st.rerun()
     
     with tab4:
         st.markdown("## 🧠 AI-Generated Insights")
