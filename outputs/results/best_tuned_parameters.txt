@@ -1,0 +1,12 @@
+BEST TUNED MODEL: XGBoost
+================================================================================
+
+Cross-Validated F1-Score: 0.5228 (±0.0058)
+
+Best Hyperparameters:
+  n_estimators: 277
+  max_depth: 10
+  learning_rate: 0.04933437748545015
+  subsample: 0.9373825140579688
+  colsample_bytree: 0.6298442949544123
+  min_child_weight: 6

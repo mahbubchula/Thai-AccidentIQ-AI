@@ -1,0 +1,33 @@
+ML Modeling Columns
+==================================================
+
+Total: 25 columns
+
+ 1. province_en
+ 2. agency
+ 3. vehicle_type
+ 4. presumed_cause
+ 5. accident_type
+ 6. number_of_vehicles_involved
+ 7. number_of_fatalities
+ 8. number_of_injuries
+ 9. weather_condition
+10. latitude
+11. longitude
+12. road_description
+13. slope_description
+14. year
+15. month
+16. day
+17. hour
+18. day_of_week
+19. is_weekend
+20. season
+21. time_of_day
+22. is_rush_hour
+23. total_casualties
+24. high_severity
+25. severity_class
+
+
+Excluded (Display Only): ['acc_code', 'route', 'province_th', 'incident_datetime', 'report_datetime']

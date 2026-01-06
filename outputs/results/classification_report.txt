@@ -1,0 +1,18 @@
+CLASSIFICATION REPORT - XGBoost
+================================================================================
+
+               precision    recall  f1-score   support
+
+ Low Severity       0.92      0.78      0.84     13457
+High Severity       0.40      0.67      0.50      2890
+
+     accuracy                           0.76     16347
+    macro avg       0.66      0.73      0.67     16347
+ weighted avg       0.83      0.76      0.78     16347
+
+
+Confusion Matrix:
+TN: 10,528, FP: 2,929, FN: 940, TP: 1,950
+
+Specificity: 0.7823
+NPV: 0.9180

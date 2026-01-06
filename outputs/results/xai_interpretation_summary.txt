@@ -1,0 +1,31 @@
+EXPLAINABLE AI (XAI) INTERPRETATION SUMMARY
+================================================================================
+
+TOP 10 MOST IMPORTANT FEATURES (SHAP):
+--------------------------------------------------------------------------------
+ 3. vehicle_type                        0.472080
+ 5. accident_type                       0.340107
+ 6. number_of_vehicles_involved         0.318839
+ 9. longitude                           0.277009
+ 8. latitude                            0.223702
+ 1. province_en                         0.193380
+15. hour                                0.123946
+14. day                                 0.090566
+13. month                               0.086895
+12. year                                0.078913
+
+
+KEY INSIGHTS:
+--------------------------------------------------------------------------------
+1. Most important feature: vehicle_type
+2. Total features analyzed: 20
+3. Samples used for SHAP: 1000
+4. Model type: XGBoost (Tuned)
+
+
+INTERPRETATION:
+--------------------------------------------------------------------------------
+• SHAP values quantify each feature's contribution to predictions
+• Positive SHAP = increases probability of high severity
+• Negative SHAP = decreases probability of high severity
+• Feature interactions show how features work together
